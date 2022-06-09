@@ -1,0 +1,26 @@
+{
+  "name": "Zendesk Attachments Downloader",
+  "version": "0.1.0",
+  "description": "A simple Zendesk attachments download automatization tool.",
+  "permissions": [
+    "storage",
+    "tabs",
+    "downloads"
+  ],
+  "host_permissions": [
+    "https://*.zendesk.com/agent/tickets/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_icon": {
+      "16": "assets/icon256.png",
+      "24": "assets/icon256.png",
+      "32": "assets/icon256.png"
+    },
+    "default_title": "Zendesk Attachments Downloader"
+  },
+  "options_page": "options.html",
+  "manifest_version": 3
+}
