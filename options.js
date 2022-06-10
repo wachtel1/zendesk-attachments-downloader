@@ -1,21 +1,28 @@
+import { template } from "./background.js";
+
+const defaultTemplate = template`Tickets/${'ticketId'}/${'filename'}`;
+
 function save_options() {
-    var path = document.getElementById('path').value;
+    var pathTemplate = document.getElementById('pathTemplate').value;
     chrome.storage.sync.set({
-        path: path
-    }, function () {
+        pathTemplate: pathTemplate
+    }, () => {
         var status = document.getElementById('status');
         status.textContent = 'Options saved.';
-        setTimeout(function () {
+        setTimeout(() => {
             status.textContent = '';
-        }, 750);
+        }, 1000);
     });
 }
 
 function restore_options() {
+    const defaultTemplateString = defaultTemplate({
+        ticketId: "${'ticketId'}", filename: "${'filename'}"
+    });
     chrome.storage.sync.get({
-        path: 'Tickets'
-    }, function (items) {
-        document.getElementById('path').value = items.path;
+        pathTemplate: defaultTemplateString
+    }, (items) => {
+        document.getElementById('pathTemplate').value = items.pathTemplate;
     });
 }
 document.addEventListener('DOMContentLoaded', restore_options);

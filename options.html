@@ -8,14 +8,20 @@
 <body>
 
     <label>
-        Relative path to save tickets' attachments:<input type="text"
-               id="path">
+        Folder structure template: <input type="text"
+               id="pathTemplate">
     </label>
+    <p>The following variables can be used:</p>
+    <ul>
+        <li>${'ticketId'} - ID of the ticket;</li>
+        <li>${'filename'} - name of the file.</li>
+    </ul>
 
     <div id="status"></div>
     <button id="save">Save</button>
 
-    <script src="options.js"></script>
+    <script type="module"
+            src="options.js"></script>
 </body>
 
 </html>

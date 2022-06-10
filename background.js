@@ -1,19 +1,55 @@
 let ticketId = "";
-let path = "Tickets";
+let pathTemplate = template`Tickets/${'ticketId'}/${'filename'}`;
+
+export function template(strings, ...keys) {
+  return ((...values) => {
+    let dict = values[values.length - 1] || {};
+    if (keys.length === 0) {
+      for (let i = 1; i < strings.length; i++) {
+        keys.push(strings[i]);
+      }
+      strings = strings[0];
+    }
+    let result = [strings[0]];
+    keys.forEach((key, i) => {
+      let value = Number.isInteger(key) ? values[key] : dict[key];
+      result.push(value, strings[i + 1]);
+    });
+    return result.join('');
+  });
+}
+
+function deconstructTemplate(string) {
+  const re = /\$\{\'\w{1,}\'\}/gm;
+  const templateKeys = string.match(re);
+  const templateStringParts = string.split(re);
+  let template = [templateStringParts];
+  templateKeys.forEach((element) => {
+    element = element.replace("${'", "").replace("'}", "");
+    template.push(element);
+  });
+  return template;
+}
 
 chrome.runtime.onStartup.addListener(() => {
-  chrome.storage.sync.get(['path'], (result) => {
-    if (result.path) {
-      path = result.path;
+  chrome.storage.sync.get(['pathTemplate'], (result) => {
+    if (result.pathTemplate) {
+      pathTemplate = template(deconstructTemplate(result.pathTemplate));
+      console.log("created a template: " + pathTemplate({ ticketId: "111111", filename: "item.filename" }));
+    } else {
+      pathTemplate = template`Tickets/${'ticketId'}/${'filename'}`;
+      console.log("using a default template: " + pathTemplate({ ticketId: "111111", filename: "item.filename" }));
     }
-  });
+  })
+  return true;
 })
 
 chrome.storage.onChanged.addListener((changes, namespace) => {
-  console.log(changes);
-  if ("path" in changes) {
-    path = changes.path.newValue;
+  if ("pathTemplate" in changes) {
+    pathTemplate = template(deconstructTemplate(changes.pathTemplate.newValue));
+    console.log("changed a template: " + pathTemplate({ ticketId: "111111", filename: "item.filename" }));
   }
+  return true;
 });
 
 chrome.tabs.onActivated.addListener((info) => {
@@ -22,6 +58,7 @@ chrome.tabs.onActivated.addListener((info) => {
       ticketId = tabs[0].url.split("/")[5];
     }
   })
+  return true;
 })
 
 chrome.tabs.onUpdated.addListener((tabId, tab) => {
@@ -32,11 +69,17 @@ chrome.tabs.onUpdated.addListener((tabId, tab) => {
       }
     }
   })
+  return true;
 })
 
 chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
   if (item.url.includes("zendesk.com/")) {
-    const filename = path + "/" + ticketId + "/" + item.filename;
+    console.log(pathTemplate);
+    const filename = pathTemplate({ ticketId: ticketId, filename: item.filename });
+    console.log("filename: " + filename)
     suggest({ filename: filename });
+  } else {
+    suggest()
   }
+  return true;
 });
