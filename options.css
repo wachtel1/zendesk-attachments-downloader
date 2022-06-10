@@ -1,0 +1,32 @@
+body {
+    background-color: whitesmoke;
+    font-size: 18px;
+    position: relative;
+    margin-left: 200px;
+}
+
+#pathTemplate {
+    width: 400px;
+    height: 24px;
+    font-size: 18px;
+}
+
+h1 {
+    color: #00363d;
+    font-size: 36px;
+    font-weight: bold;
+}
+
+p {
+    color: black;
+}
+
+#status {
+    margin-bottom: 24px;
+}
+
+#save {
+    font-size: 24px;
+    width: 80px;
+    height: 32px;
+}
