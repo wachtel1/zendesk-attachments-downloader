@@ -72,7 +72,7 @@ chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
       suggest({ filename: filename });
     });
   } else {
-    suggest()
+    suggest();
   };
   return true;
 });
