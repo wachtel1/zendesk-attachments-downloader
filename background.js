@@ -66,10 +66,10 @@ chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
       if (result.pathTemplate) {
         console.log(result);
         pathTemplate = template(deconstructTemplate(result.pathTemplate));
-        const filename = pathTemplate({ ticketId: ticketId, filename: item.filename });
-        console.log(filename);
-        suggest({ filename: filename });
       };
+      const filename = pathTemplate({ ticketId: ticketId, filename: item.filename });
+      console.log(filename);
+      suggest({ filename: filename });
     });
   } else {
     suggest()
