@@ -31,6 +31,13 @@ function deconstructTemplate(string) {
   return template;
 }
 
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === "install" || details.reason === "update") {
+    let url = chrome.runtime.getURL("options.html");
+    chrome.tabs.create({ url });
+  }
+})
+
 chrome.runtime.onStartup.addListener(() => {
   chrome.storage.sync.get(['pathTemplate'], (result) => {
     if (result.pathTemplate) {
@@ -47,7 +54,7 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     pathTemplate = template(deconstructTemplate(changes.pathTemplate.newValue));
   }
   return true;
-});
+})
 
 chrome.tabs.onActivated.addListener((info) => {
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
@@ -77,4 +84,4 @@ chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
     suggest()
   }
   return true;
-});
+})
