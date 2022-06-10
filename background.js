@@ -35,10 +35,8 @@ chrome.runtime.onStartup.addListener(() => {
   chrome.storage.sync.get(['pathTemplate'], (result) => {
     if (result.pathTemplate) {
       pathTemplate = template(deconstructTemplate(result.pathTemplate));
-      console.log("created a template: " + pathTemplate({ ticketId: "111111", filename: "item.filename" }));
     } else {
       pathTemplate = template`Tickets/${'ticketId'}/${'filename'}`;
-      console.log("using a default template: " + pathTemplate({ ticketId: "111111", filename: "item.filename" }));
     }
   })
   return true;
@@ -47,7 +45,6 @@ chrome.runtime.onStartup.addListener(() => {
 chrome.storage.onChanged.addListener((changes, namespace) => {
   if ("pathTemplate" in changes) {
     pathTemplate = template(deconstructTemplate(changes.pathTemplate.newValue));
-    console.log("changed a template: " + pathTemplate({ ticketId: "111111", filename: "item.filename" }));
   }
   return true;
 });
@@ -74,9 +71,7 @@ chrome.tabs.onUpdated.addListener((tabId, tab) => {
 
 chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
   if (item.url.includes("zendesk.com/")) {
-    console.log(pathTemplate);
     const filename = pathTemplate({ ticketId: ticketId, filename: item.filename });
-    console.log("filename: " + filename)
     suggest({ filename: filename });
   } else {
     suggest()
