@@ -36,6 +36,7 @@ chrome.runtime.onInstalled.addListener((details) => {
     chrome.tabs.create({ url });
     chrome.storage.local.set({ pathTemplate: "Tickets/${'ticketId'}/${'filename'}" });
   };
+  return true;
 });
 
 chrome.tabs.onActivated.addListener((info) => {
@@ -60,15 +61,12 @@ chrome.tabs.onUpdated.addListener((tabId, tab) => {
 
 chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
   if (item.url.includes("zendesk.com/")) {
-    console.log("download from Zendesk");
     let pathTemplate = template`Tickets/${'ticketId'}/${'filename'}`;
     chrome.storage.local.get(['pathTemplate'], (result) => {
       if (result.pathTemplate) {
-        console.log(result);
         pathTemplate = template(deconstructTemplate(result.pathTemplate));
       };
       const filename = pathTemplate({ ticketId: ticketId, filename: item.filename });
-      console.log(filename);
       suggest({ filename: filename });
     });
   } else {
