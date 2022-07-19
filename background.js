@@ -1,4 +1,4 @@
-let ticketId = "";
+//let ticketId = "";
 
 function template(strings, ...keys) {
   return ((...values) => {
@@ -42,7 +42,10 @@ chrome.runtime.onInstalled.addListener((details) => {
 chrome.tabs.onActivated.addListener((info) => {
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
     if (tabs[0] && tabs[0].url.includes("zendesk.com/agent/tickets/")) {
-      ticketId = tabs[0].url.split("/")[5];
+      const ticketId = tabs[0].url.split("/")[5];
+      chrome.storage.local.set({
+        ticketId: ticketId
+      });
     };
   });
   return true;
@@ -52,7 +55,10 @@ chrome.tabs.onUpdated.addListener((tabId, tab) => {
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
     if (tabs[0] && tabs[0].id === tabId) {
       if (tab.url && tab.url.includes("zendesk.com/agent/tickets/")) {
-        ticketId = tab.url.split("/")[5];
+        const ticketId = tabs[0].url.split("/")[5];
+        chrome.storage.local.set({
+          ticketId: ticketId
+        });
       };
     };
   });
@@ -62,11 +68,11 @@ chrome.tabs.onUpdated.addListener((tabId, tab) => {
 chrome.downloads.onDeterminingFilename.addListener((item, suggest) => {
   if (item.url.includes("zendesk.com/")) {
     let pathTemplate = template`Tickets/${'ticketId'}/${'filename'}`;
-    chrome.storage.local.get(['pathTemplate'], (result) => {
+    chrome.storage.local.get(['pathTemplate', 'ticketId'], (result) => {
       if (result.pathTemplate) {
         pathTemplate = template(deconstructTemplate(result.pathTemplate));
       };
-      const filename = pathTemplate({ ticketId: ticketId, filename: item.filename });
+      const filename = pathTemplate({ ticketId: result.ticketId, filename: item.filename });
       suggest({ filename: filename });
     });
   } else {
